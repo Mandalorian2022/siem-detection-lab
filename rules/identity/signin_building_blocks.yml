@@ -1,0 +1,69 @@
+title: Cloud sign-in failure (building block)
+id: dd3a301d-2b24-4aab-a41d-c238e87e69f4
+name: signin_failure
+status: stable
+description: |
+  A failed cloud sign-in with a bad password, from any address except the
+  organisation's own corporate egress. Never alerts on its own; it is the
+  input to the spray and brute-force correlations.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  product: azure
+  service: signinlogs
+detection:
+  selection:
+    ResultType: '50126'
+  filter_corporate:
+    source.asn.type: corporate
+  condition: selection and not filter_corporate
+level: informational
+x-building-block: true
+tags:
+  - attack.credential_access
+  - attack.t1110
+---
+title: Cloud sign-in success (building block)
+id: 7a78b3a2-35f7-4d80-b753-13dd1dccf12f
+name: signin_success
+status: stable
+description: A successful cloud sign-in. Input to the "then success" correlations.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  product: azure
+  service: signinlogs
+detection:
+  selection:
+    ResultType: '0'
+  condition: selection
+level: informational
+x-building-block: true
+tags:
+  - attack.initial_access
+  - attack.t1078.004
+---
+title: MFA prompt denied or timed out (building block)
+id: 4ec91fca-30ca-49b8-9c3d-cdbc732bafb1
+name: signin_mfa_denied
+status: stable
+description: |
+  The password was right but the second factor was declined or ignored.
+  One of these is a user being careful; a run of them is MFA fatigue.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  product: azure
+  service: signinlogs
+detection:
+  selection:
+    ResultType: '500121'
+    MfaResult:
+      - denied
+      - timeout
+  condition: selection
+level: informational
+x-building-block: true
+tags:
+  - attack.credential_access
+  - attack.t1621

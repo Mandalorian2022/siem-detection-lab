@@ -1,0 +1,52 @@
+title: Successful sign-in through a known anonymiser
+id: 50ca52bf-98a6-408c-9c0d-18638b9975b6
+name: signin_anonymizer_success
+status: stable
+description: |
+  A valid sign-in from an address threat intelligence classifies as an
+  anonymising proxy or exit node. Staff have no reason to reach the tenant
+  that way; attackers using bought credentials usually do.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  product: azure
+  service: signinlogs
+detection:
+  selection:
+    ResultType: '0'
+    source.ti.category: anonymizer
+  condition: selection
+level: high
+falsepositives:
+  - Privacy-conscious staff on a personal VPN whose exit is on the list
+tags:
+  - attack.command_and_control
+  - attack.t1090.003
+  - attack.initial_access
+  - attack.t1078.004
+---
+title: Privileged sign-in from a country never used before
+id: 5a5af0e6-6455-4035-bdb1-c27dd1d13177
+name: signin_privileged_new_country
+status: stable
+description: |
+  A privileged identity signs in successfully from a country absent from
+  its history. Admin accounts have short, stable travel histories, so a
+  new country is worth a call even when MFA passed.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  product: azure
+  service: signinlogs
+detection:
+  selection:
+    ResultType: '0'
+    user.privileged: true
+    source.geo.known_for_user: false
+  condition: selection
+level: high
+falsepositives:
+  - An administrator travelling without a pre-trip note
+tags:
+  - attack.initial_access
+  - attack.t1078.004

@@ -1,0 +1,87 @@
+title: DNS query for a domain on the threat-intel list
+id: 1feeafde-1bd4-48b3-9f3d-0122d9f496d0
+name: dns_query_intel_domain
+status: stable
+description: A host resolved a domain that threat intelligence lists as malicious.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  category: dns
+detection:
+  selection:
+    dns.question.ti_category|exists: true
+  condition: selection
+level: high
+falsepositives:
+  - Security tooling that resolves indicators on purpose (sandboxes, enrichment jobs)
+tags:
+  - attack.command_and_control
+  - attack.t1071
+---
+title: Connection to an address on the threat-intel list
+id: 08069e37-79ae-4e15-ac00-d99d9a6d97d1
+name: net_conn_intel_destination
+status: stable
+description: A host connected to an address threat intelligence lists as hostile.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  category: network_connection
+detection:
+  selection:
+    destination.ti.category|exists: true
+  condition: selection
+level: high
+tags:
+  - attack.command_and_control
+  - attack.t1071
+---
+title: Long hexadecimal TXT query (building block)
+id: 0d92dcf7-3077-4246-93cf-049b44f5ca04
+name: dns_long_txt_query
+status: stable
+description: |
+  A TXT lookup whose first label is forty or more hex characters, outside
+  the allowlisted suffixes. One is nothing; a stream is a tunnel.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  category: dns
+detection:
+  selection:
+    record_type: TXT
+    query|re: '^[0-9a-f]{40,}\.'
+    dns.question.allowlisted: false
+  condition: selection
+level: informational
+x-building-block: true
+tags:
+  - attack.command_and_control
+  - attack.t1071.004
+---
+title: High-volume long-label DNS queries
+id: 7e89cf5b-9cef-4b96-95a4-950502e5e0fc
+name: dns_long_label_query
+status: stable
+description: |
+  Sixty or more long hexadecimal TXT queries from one host in fifteen
+  minutes. Endpoint security products do this legitimately, which is why
+  their domains are allowlisted in the building block rather than here.
+author: Reza Faraji
+date: 2026-10-20
+correlation:
+  type: event_count
+  rules:
+    - dns_long_txt_query
+  group-by:
+    - Hostname
+  timespan: 15m
+  condition:
+    gte: 60
+level: high
+falsepositives:
+  - A new security agent whose lookup domain is not yet allowlisted
+tags:
+  - attack.command_and_control
+  - attack.exfiltration
+  - attack.t1071.004

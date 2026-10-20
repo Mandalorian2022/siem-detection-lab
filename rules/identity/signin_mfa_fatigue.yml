@@ -1,0 +1,47 @@
+title: MFA fatigue
+id: f336d7a2-fc8a-41fc-9285-b59005d5f139
+name: signin_mfa_fatigue
+status: stable
+description: |
+  Five or more denied or ignored MFA prompts for one account in half an
+  hour. Someone holds the password and is pushing prompts at the user.
+author: Reza Faraji
+date: 2026-10-20
+correlation:
+  type: event_count
+  rules:
+    - signin_mfa_denied
+  group-by:
+    - UserPrincipalName
+  timespan: 30m
+  condition:
+    gte: 5
+level: high
+tags:
+  - attack.credential_access
+  - attack.t1621
+---
+title: MFA fatigue followed by approval
+id: b71b1437-cc47-4ebe-afc3-40f46c129105
+name: signin_mfa_fatigue_then_success
+status: stable
+description: |
+  An MFA fatigue run and then a successful sign-in for the same account
+  within the hour: the user approved a prompt they did not start.
+author: Reza Faraji
+date: 2026-10-20
+correlation:
+  type: temporal_ordered
+  rules:
+    - signin_mfa_fatigue
+    - signin_success
+  group-by:
+    - UserPrincipalName
+  timespan: 1h
+  generate: true
+level: critical
+tags:
+  - attack.credential_access
+  - attack.initial_access
+  - attack.t1621
+  - attack.t1078.004

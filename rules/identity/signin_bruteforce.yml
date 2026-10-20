@@ -1,0 +1,78 @@
+title: Brute force against one account
+id: 278796dc-69a6-461e-86e9-2a7588342c04
+name: signin_bruteforce_account
+status: stable
+description: |
+  Ten or more password failures for the same account from the same address
+  within ten minutes. A person mistyping gives up after three or four.
+author: Reza Faraji
+date: 2026-10-20
+correlation:
+  type: event_count
+  rules:
+    - signin_failure
+  group-by:
+    - UserPrincipalName
+    - IpAddress
+  timespan: 10m
+  condition:
+    gte: 10
+level: medium
+falsepositives:
+  - A misconfigured client or script retrying a stale password
+tags:
+  - attack.credential_access
+  - attack.t1110.001
+---
+title: Brute force followed by a successful sign-in
+id: 86bcd211-c67b-4a48-a68d-9a012306c67b
+name: signin_bruteforce_then_success
+status: stable
+description: |
+  A brute-force run against an account, then a successful sign-in for that
+  account from the same address within the hour. The guessing worked.
+author: Reza Faraji
+date: 2026-10-20
+correlation:
+  type: temporal_ordered
+  rules:
+    - signin_bruteforce_account
+    - signin_success
+  group-by:
+    - UserPrincipalName
+    - IpAddress
+  timespan: 1h
+  generate: true
+level: critical
+tags:
+  - attack.credential_access
+  - attack.initial_access
+  - attack.t1110.001
+  - attack.t1078.004
+---
+title: Slow brute force from rotating addresses
+id: 6010dc9d-7200-4e43-9318-ff0388502bd5
+name: signin_slow_bruteforce
+status: experimental
+description: |
+  Twenty or more failures for one account over four hours regardless of
+  source. Catches guessing that rotates addresses and paces itself under
+  the per-address threshold. The four-hour window is the price of the
+  low rate; a determined attacker can pace below it (see the documented gap).
+author: Reza Faraji
+date: 2026-10-20
+correlation:
+  type: event_count
+  rules:
+    - signin_failure
+  group-by:
+    - UserPrincipalName
+  timespan: 4h
+  condition:
+    gte: 20
+level: medium
+falsepositives:
+  - A shared mailbox whose password changed while several devices still hold the old one
+tags:
+  - attack.credential_access
+  - attack.t1110.001

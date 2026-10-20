@@ -1,0 +1,114 @@
+title: Windows logon failure (building block)
+id: 3d28b422-46e9-4c85-b14a-073e576cc586
+name: win_logon_failure
+status: stable
+description: Event 4625. Input to the many-hosts correlation; never alerts alone.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: '4625'
+  condition: selection
+level: informational
+x-building-block: true
+tags:
+  - attack.credential_access
+  - attack.t1110
+---
+title: Failed logons across many hosts from one source
+id: 3c507b7f-d2ff-4545-8e17-ec5e61414733
+name: win_failed_logons_many_hosts
+status: stable
+description: |
+  One source address fails to log on to five or more distinct hosts within
+  fifteen minutes. Lateral movement with guessed or stale credentials looks
+  like this, and so does an inventory script with an expired password; the
+  rule is right to fire on both, and the triage note tells the analyst how
+  to tell them apart.
+author: Reza Faraji
+date: 2026-10-20
+correlation:
+  type: value_count
+  rules:
+    - win_logon_failure
+  group-by:
+    - IpAddress
+  timespan: 15m
+  condition:
+    field: Computer
+    gte: 5
+level: high
+falsepositives:
+  - Scheduled jobs or scanners holding an expired service password
+tags:
+  - attack.credential_access
+  - attack.lateral_movement
+  - attack.t1110.003
+  - attack.t1021
+---
+title: Privileged interactive logon out of hours without a change
+id: e22c85ec-0d51-456a-85ed-85e6eadc097f
+name: win_privileged_logon_offhours
+status: stable
+description: |
+  An interactive or remote-interactive logon by a privileged account
+  between 21:00 and 06:00 local time, with no approved change window
+  covering the account and host. Service logons (type 5) are excluded so
+  scheduled jobs do not fire it.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: '4624'
+    LogonType:
+      - '2'
+      - '10'
+      - '11'
+    user.privileged: true
+  night:
+    time.local_hour|lt: 6
+  late:
+    time.local_hour|gte: 21
+  filter_change:
+    change.approved: true
+  condition: selection and (night or late) and not filter_change
+level: medium
+falsepositives:
+  - Emergency work before the change ticket is filed (expected; close with the ticket number)
+tags:
+  - attack.persistence
+  - attack.t1078.002
+---
+title: Remote desktop logon to a server from the internet
+id: 1d7cd9b2-c179-4343-b6b4-c03e350bfb13
+name: win_rdp_from_external
+status: stable
+description: |
+  A type-10 (remote interactive) logon whose source is a public address
+  other than the corporate VPN egress. Servers should only be reachable
+  over RDP from inside or through the VPN.
+author: Reza Faraji
+date: 2026-10-20
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: '4624'
+    LogonType: '10'
+    source.is_internal: false
+  filter_vpn:
+    source.asn.type: corporate
+  condition: selection and not filter_vpn
+level: critical
+tags:
+  - attack.initial_access
+  - attack.lateral_movement
+  - attack.t1133
+  - attack.t1021.001
