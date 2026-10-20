@@ -1,0 +1,22 @@
+title: Impossible Travel (geo-distant successful logins)
+id: 9f1b0c2a-0003-4a10-9a30-siemlab000003
+status: experimental
+description: >
+  Two successful logins for one account from geographically distant
+  sources within a time too short to physically travel between them.
+  Thresholds TRAVEL_MIN_KM and TRAVEL_MAX_HOURS, distance by haversine on
+  GeoIP-enriched source coordinates.
+logsource:
+  product: linux
+  service: auth
+detection:
+  success:
+    outcome: success
+  condition: success | geo_distance_km(src_ip) >= 1000 within 1h by user
+fields:
+  - user
+  - src_ip
+  - host
+falsepositives:
+  - VPN or proxy egress that relocates a user's apparent source
+level: high

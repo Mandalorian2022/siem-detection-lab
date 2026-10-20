@@ -1,0 +1,132 @@
+{
+  "attacks": [
+    {
+      "type": "brute_force",
+      "key": {
+        "user": "bob",
+        "src_ip": "203.0.113.5"
+      },
+      "event_ids": [
+        "e000383",
+        "e000384",
+        "e000385",
+        "e000386",
+        "e000387",
+        "e000388",
+        "e000389",
+        "e000390",
+        "e000391",
+        "e000392",
+        "e000393",
+        "e000394",
+        "e000395"
+      ]
+    },
+    {
+      "type": "impossible_travel",
+      "key": {
+        "user": "bob"
+      },
+      "event_ids": [
+        "e000382",
+        "e000395"
+      ]
+    },
+    {
+      "type": "password_spray",
+      "key": {
+        "src_ip": "192.0.2.7"
+      },
+      "event_ids": [
+        "e000499",
+        "e000500",
+        "e000501",
+        "e000502",
+        "e000503",
+        "e000504",
+        "e000505",
+        "e000506",
+        "e000507",
+        "e000508",
+        "e000509",
+        "e000510",
+        "e000511",
+        "e000512",
+        "e000513"
+      ]
+    },
+    {
+      "type": "impossible_travel",
+      "key": {
+        "user": "judy"
+      },
+      "event_ids": [
+        "e000611",
+        "e000612"
+      ]
+    },
+    {
+      "type": "off_hours_admin",
+      "key": {
+        "user": "svc-backup",
+        "host": "host02",
+        "hour": 3
+      },
+      "event_ids": [
+        "e000730"
+      ]
+    },
+    {
+      "type": "brute_force",
+      "key": {
+        "user": "root",
+        "src_ip": "203.0.113.9"
+      },
+      "event_ids": [
+        "e000903",
+        "e000904",
+        "e000905",
+        "e000906",
+        "e000907",
+        "e000908",
+        "e000909",
+        "e000910",
+        "e000911",
+        "e000912",
+        "e000913",
+        "e000914",
+        "e000915"
+      ]
+    },
+    {
+      "type": "off_hours_admin",
+      "key": {
+        "user": "root",
+        "host": "host03",
+        "hour": 23
+      },
+      "event_ids": [
+        "e000915"
+      ]
+    }
+  ],
+  "benign_anomalies": [
+    {
+      "type": "brute_force",
+      "key": {
+        "user": "frank",
+        "src_ip": "198.51.100.15"
+      }
+    },
+    {
+      "type": "off_hours_admin",
+      "key": {
+        "user": "netadmin",
+        "host": "host02",
+        "hour": 16
+      }
+    }
+  ],
+  "generated_at": "2026-10-20T20:45:07.249989+00:00",
+  "event_count": 980
+}

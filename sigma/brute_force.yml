@@ -1,0 +1,23 @@
+title: Authentication Brute Force (single account, single source)
+id: 9f1b0c2a-0001-4a10-9a30-siemlab000001
+status: experimental
+description: >
+  Many failed authentications for one account from one source address
+  within a short window, a classic brute-force signature. The lab
+  implementation uses a sliding window of BRUTE_FORCE_WINDOW and a
+  threshold of BRUTE_FORCE_FAILS.
+logsource:
+  product: linux
+  service: auth
+detection:
+  failures:
+    outcome: failure
+  timeframe: 5m
+  condition: failures | count() by user, src_ip >= 8
+fields:
+  - user
+  - src_ip
+  - host
+falsepositives:
+  - A user repeatedly mistyping a password (kept below threshold in the lab)
+level: medium

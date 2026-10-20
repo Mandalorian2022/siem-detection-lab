@@ -1,0 +1,21 @@
+title: Off-Hours Privileged Login
+id: 9f1b0c2a-0004-4a10-9a30-siemlab000004
+status: experimental
+description: >
+  A successful privileged-account login outside defined business hours.
+  Business window BUSINESS_START..BUSINESS_END in UTC.
+logsource:
+  product: linux
+  service: auth
+detection:
+  priv_success:
+    outcome: success
+    privileged: true
+  condition: priv_success and hour < 7 or hour >= 19
+fields:
+  - user
+  - host
+  - src_ip
+falsepositives:
+  - Scheduled maintenance windows run by administrators off-hours
+level: medium
