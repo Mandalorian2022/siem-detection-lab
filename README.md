@@ -1,6 +1,6 @@
 # SIEM Detection Lab
 
-[![ci](https://github.com/Mandalorian2022/siem-detection-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/Mandalorian2022/siem-detection-lab/actions/workflows/ci.yml)
+[![ci](https://github.com/farajisec/siem-detection-lab/actions/workflows/ci.yml/badge.svg)](https://github.com/farajisec/siem-detection-lab/actions/workflows/ci.yml)
 
 A detection-engineering lab you can run end to end in under a minute: a
 from-scratch **Sigma rule engine** with correlation rules, four
